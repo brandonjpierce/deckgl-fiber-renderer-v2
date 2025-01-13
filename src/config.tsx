@@ -47,6 +47,7 @@ import type {
   HostContext,
   Instance,
   LayerFactoryProps,
+  Node,
   Props,
   Type,
   UpdatePayload,
@@ -221,12 +222,13 @@ const catalogue = {
  * logic to each of the respective host APIs.
  */
 function createDeckglObject(type: Type, props: Props): Instance {
-  const name = toPascal(type) as keyof typeof catalogue;
-  const layer = catalogue[name] as new (props: Props) => Instance['node'];
+  const name = toPascal(type);
 
-  if (!layer) {
+  if (!(name in catalogue)) {
     throw new Error(`Unsupported element type: ${type}`);
   }
+
+  const layer = catalogue[name as keyof typeof catalogue] as new (props: Props) => Node;
 
   return {
     node: new layer(props),

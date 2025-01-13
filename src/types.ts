@@ -41,7 +41,9 @@ export type Container = { store: Store };
 
 export type HostContext = { store: Store };
 
-export type Instance = { node: Layer | CompositeLayer | View; children: Instance[] };
+export type Node = Layer | CompositeLayer | View;
+
+export type Instance = { node: Node; children: Instance[] };
 
 export type ChildSet = Instance[];
 
