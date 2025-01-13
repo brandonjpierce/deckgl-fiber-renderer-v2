@@ -34,7 +34,7 @@ import type {
   TextLayerProps,
   SolidPolygonLayerProps,
 } from "@deck.gl/layers";
-import type { ReactNode } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 import type { Store } from "./store";
 
 export type Container = { store: Store };
@@ -55,14 +55,13 @@ export type CanvasElement = HTMLCanvasElement;
 
 export type ViewOrViews = View | View[] | null;
 
-export type DeckGLProps<ViewsT extends ViewOrViews = null> = Omit<
+export type DeckGLProps<ViewsT extends ViewOrViews = null> = PropsWithChildren<Omit<
   DeckProps<ViewsT>,
   "width" | "height" | "gl" | "parent" | "canvas" | "_customRender"
 > & {
   width?: string | number;
   height?: string | number;
-  children?: ReactNode;
-};
+}>;
 
 export type ReconcilerRoot = {
   render: (element: ReactNode) => void;
@@ -79,7 +78,6 @@ export type LayerFactoryProps<L extends Layer = Layer> = {
   props: ExtractLayerProps<L>
 }
 
-// TODO: allow for `children` type for React children
 export interface DeckglElements {
   // @deck.gl/core
   mapView: ExtractViewProps<MapView>;
@@ -119,7 +117,7 @@ export interface DeckglElements {
 
 export type Type = keyof DeckglElements;
 
-export type Props = DeckglElements[Type];
+export type Props = PropsWithChildren<DeckglElements[Type]>;
 
 declare global {
   namespace React {
