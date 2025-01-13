@@ -1,0 +1,29 @@
+# Operating system
+.DS_Store
+
+# pnpm
+node_modules
+
+# Turborepo
+.turbo
+
+# Vitest
+.vitest
+coverage
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Build directories
+.next
+build
+dist
+
+# Environment variables
+.env
+
+# ide files
+*.iml
+.idea
+
+
