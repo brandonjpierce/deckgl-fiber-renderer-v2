@@ -2,7 +2,6 @@ import { useRef, memo } from "react";
 import { useIsomorphicLayoutEffect } from "./hooks";
 import { createRoot } from "./renderer";
 import type { CanvasElement, ReconcilerRoot, DeckGLProps } from "./types";
-import "./jsx";
 
 function DeckglComponent(props: DeckGLProps) {
   const { children, ...etc } = props;

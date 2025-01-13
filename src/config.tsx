@@ -1,10 +1,44 @@
 import {
+  FirstPersonView,
+  _GlobeView as GlobeView,
+  MapView,
+  OrthographicView,
+  OrbitView,
+} from "@deck.gl/core";
+import {
+  S2Layer,
+  QuadkeyLayer,
+  TileLayer,
+  TripsLayer,
+  H3ClusterLayer,
+  H3HexagonLayer,
+  Tile3DLayer,
+  TerrainLayer,
+  MVTLayer,
+  GeohashLayer,
+} from "@deck.gl/geo-layers";
+import {
+  ArcLayer,
+  BitmapLayer,
+  IconLayer,
+  LineLayer,
+  PointCloudLayer,
+  ScatterplotLayer,
+  ColumnLayer,
+  GridCellLayer,
+  PathLayer,
+  PolygonLayer,
+  GeoJsonLayer,
+  TextLayer,
+  SolidPolygonLayer,
+} from "@deck.gl/layers";
+import { ScenegraphLayer, SimpleMeshLayer } from "@deck.gl/mesh-layers";
+import {
   DefaultEventPriority,
   ContinuousEventPriority,
   DiscreteEventPriority,
 } from "react-reconciler/constants";
 import { LogLayer, ConsoleTransport, type ILogLayer } from "loglayer";
-import { catalogue } from "./extend";
 import { toPascal, flattenTree, organizeList } from "./utils";
 import type { Fiber } from "react-reconciler";
 import type {
@@ -12,6 +46,8 @@ import type {
   Container,
   HostContext,
   Instance,
+  LayerFactoryProps,
+  Node,
   Props,
   Type,
   UpdatePayload,
@@ -128,6 +164,55 @@ export const cancelTimeout = clearTimeout;
  */
 export const scheduleMicrotask = queueMicrotask;
 
+class LayerFactory {
+  constructor(props: LayerFactoryProps) {
+    return new props.layer(props.props)
+  }
+}
+
+const catalogue = {
+  // @deck.gl/core
+  MapView,
+  OrthographicView,
+  OrbitView,
+  FirstPersonView,
+  GlobeView,
+
+  // @deck.gl/layers
+  ArcLayer,
+  BitmapLayer,
+  IconLayer,
+  LineLayer,
+  PointCloudLayer,
+  ScatterplotLayer,
+  ColumnLayer,
+  GridCellLayer,
+  PathLayer,
+  PolygonLayer,
+  GeoJsonLayer,
+  TextLayer,
+  SolidPolygonLayer,
+
+  // @deck.gl/geo-layers
+  S2Layer,
+  QuadkeyLayer,
+  TileLayer,
+  TripsLayer,
+  H3ClusterLayer,
+  H3HexagonLayer,
+  Tile3DLayer,
+  TerrainLayer,
+  MVTLayer,
+  GeohashLayer,
+
+  // @deck.gl/mesh-layers
+  ScenegraphLayer,
+  SimpleMeshLayer,
+
+  //
+  LayerFactory
+}
+
 /**
  * Since the creation of a Deckgl layer is the same regardless if we are instantiating
  * for the first time or cloning after a change in the tree, we reuse the same logic
@@ -139,15 +224,14 @@ export const scheduleMicrotask = queueMicrotask;
 function createDeckglObject(type: Type, props: Props): Instance {
   const name = toPascal(type);
 
-  if (!catalogue[name]) {
+  if (!(name in catalogue)) {
     throw new Error(`Unsupported element type: ${type}`);
   }
 
-  // TODO: figure out a better return type for `instance`
-  const instance: any = new catalogue[name](props);
+  const layer = catalogue[name as keyof typeof catalogue] as new (props: Props) => Node;
 
   return {
-    node: instance,
+    node: new layer(props),
     children: [],
   };
 }
@@ -208,7 +292,7 @@ export function createTextInstance() {
  */
 export function cloneInstance(
   instance: Instance,
-  type: string,
+  type: Type,
   oldProps: Props,
   newProps: Props,
   keepChildren: boolean,
@@ -600,7 +684,7 @@ export function getCurrentEventPriority(): number {
 /**
  * Undocumented and untyped
  */
-export function setCurrentUpdatePriority(newPriority): void {
+export function setCurrentUpdatePriority(newPriority: number): void {
   // log.group("setCurrentUpdatePriority");
   // log.groupEnd();
 
