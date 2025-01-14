@@ -27,7 +27,9 @@ const log: CustomLogLayer = new LogLayer({
   transport: new ConsoleTransport({
     logger: console,
   }),
-  enabled: true,
+
+  // Set to false to quiet down logs
+  enabled: false,
 });
 
 /**
@@ -56,7 +58,6 @@ const log: CustomLogLayer = new LogLayer({
  *    getCurrentUpdatePriority
  *    setCurrentUpdatePriority
  *    ---
- *
  * 9. prepareForCommit
  * 10. replaceContainerChildren
  * 11. resetAfterCommit
@@ -419,9 +420,9 @@ export function prepareUpdate(
 export function prepareForCommit(
   container: Container
 ): Record<string, unknown> | null {
-  // log.group("prepareForCommit");
-  // log.info("container: %O", container);
-  // log.groupEnd();
+  log.info("λ prepareForCommit");
+  log.debug("\tcontainer:", container);
+  log.info("\n");
 
   return null;
 }
@@ -433,9 +434,9 @@ export function prepareForCommit(
  * You can leave it empty.
  */
 export function resetAfterCommit(container: Container): void {
-  // log.group("resetAfterCommit");
-  // log.info("container: %O", container);
-  // log.groupEnd();
+  log.info("λ resetAfterCommit");
+  log.debug("\tcontainer:", container);
+  log.info("\n");
 }
 
 /**
@@ -444,8 +445,8 @@ export function resetAfterCommit(container: Container): void {
  * You can leave it empty.
  */
 export function preparePortalMount(): void {
-  // log.group("preparePortalMount");
-  // log.groupEnd();
+  log.info("λ preparePortalMount");
+  log.info("\n");
 }
 
 /**
@@ -465,10 +466,10 @@ export function preparePortalMount(): void {
  * This method happens **in the render phase**. Do not mutate the tree from it.
  */
 export function shouldSetTextContent(type: Type, props: Props): boolean {
-  // log.group("shouldSetTextContent");
-  // log.info("type: %s", type);
-  // log.info("props: %O", props);
-  // log.groupEnd();
+  log.info("λ shouldSetTextContent");
+  log.debug("\ttype:", type);
+  log.debug("\tprops:", props);
+  log.info("\n");
 
   return false;
 }
@@ -482,9 +483,9 @@ export function shouldSetTextContent(type: Type, props: Props): boolean {
  * This method happens **in the render phase**. Do not mutate the tree from it.
  */
 export function getRootHostContext(rootContainer: Container): HostContext {
-  // log.group("getRootHostContext");
-  // log.info("rootContainer: %O", rootContainer);
-  // log.groupEnd();
+  log.info("λ getRootHostContext");
+  log.debug("\trootContainer:", rootContainer);
+  log.info("\n");
 
   return rootContainer;
 }
@@ -507,10 +508,10 @@ export function getChildHostContext(
   parentHostContext: HostContext,
   type: Type
 ): HostContext {
-  // log.group("getChildHostContext");
-  // log.info("parentHostContext: %O", parentHostContext);
-  // log.info("type: %s", type);
-  // log.groupEnd();
+  log.info("λ getChildHostContext");
+  log.debug("\tparentHostContext:", parentHostContext);
+  log.debug("\ttype:", type);
+  log.info("\n");
 
   // IDEA: detect if we are inside of a View instance
   // let context = { ...parentHostContext };
@@ -529,9 +530,9 @@ export function getChildHostContext(
  * If you don't want to do anything here, return `instance`.
  */
 export function getPublicInstance(instance: Instance): Instance {
-  // log.group("getPublicInstance");
-  // log.info("instance: %O", instance);
-  // log.groupEnd();
+  log.info("λ getPublicInstance");
+  log.debug("\tinstance:", instance);
+  log.info("\n");
 
   return instance;
 }
@@ -542,9 +543,9 @@ export function getPublicInstance(instance: Instance): Instance {
  * Undocumented
  */
 export function detachDeletedInstance(instance: Instance): void {
-  // log.group("detachDeletedInstance");
-  // log.info("instance: %O", instance);
-  // log.groupEnd();
+  log.info("λ detachDeletedInstance");
+  log.debug("\tinstance:", instance);
+  log.info("\n");
 }
 
 /**
@@ -563,8 +564,8 @@ export function detachDeletedInstance(instance: Instance): void {
  * this event is considered background work, and interactive events will be prioritized over it.
  */
 export function getCurrentEventPriority(): number {
-  // log.group("getCurrentEventPriority");
-  // log.groupEnd();
+  log.info("λ getCurrentEventPriority");
+  log.info("\n");
 
   // TODO: check to see if we can hoist this out of function
   const globalScope =
@@ -601,8 +602,9 @@ export function getCurrentEventPriority(): number {
  * Undocumented and untyped
  */
 export function setCurrentUpdatePriority(newPriority): void {
-  // log.group("setCurrentUpdatePriority");
-  // log.groupEnd();
+  log.info("λ setCurrentUpdatePriority");
+  log.debug("\tnewPriority:", newPriority);
+  log.info("\n");
 
   currentUpdatePriority = newPriority;
 }
@@ -611,8 +613,8 @@ export function setCurrentUpdatePriority(newPriority): void {
  * Undocumented and untyped
  */
 export function getCurrentUpdatePriority() {
-  // log.group("getCurrentUpdatePriority");
-  // log.groupEnd();
+  log.info("λ getCurrentUpdatePriority");
+  log.info("\n");
 
   return currentUpdatePriority;
 }
@@ -621,8 +623,8 @@ export function getCurrentUpdatePriority() {
  * Undocumented and untyped
  */
 export function resolveUpdatePriority() {
-  // log.group("resolveUpdatePriority");
-  // log.groupEnd();
+  log.info("λ resolveUpdatePriority");
+  log.info("\n");
 
   if (currentUpdatePriority !== DefaultEventPriority) {
     return currentUpdatePriority;
@@ -635,8 +637,10 @@ export function resolveUpdatePriority() {
  * Undocumented and untyped
  */
 export function maySuspendCommit(type: Type, props: Props) {
-  // log.group("maySuspendCommit");
-  // log.groupEnd();
+  log.info("λ maySuspendCommit");
+  log.debug("\ttype:", type);
+  log.debug("\tprops:", props);
+  log.info("\n");
 
   return false;
 }
@@ -645,8 +649,9 @@ export function maySuspendCommit(type: Type, props: Props) {
  * Undocumented
  */
 export function getInstanceFromNode(node: any): Fiber | null | undefined {
-  // log.group("getInstanceFromNode");
-  // log.groupEnd();
+  log.info("λ getInstanceFromNode");
+  log.debug("\tnode:", node);
+  log.info("\n");
 
   return null;
 }
@@ -655,24 +660,25 @@ export function getInstanceFromNode(node: any): Fiber | null | undefined {
  * Undocumented
  */
 export function beforeActiveInstanceBlur(): void {
-  // log.group("beforeActiveInstanceBlur");
-  // log.groupEnd();
+  log.info("λ beforeActiveInstanceBlur");
+  log.info("\n");
 }
 
 /**
  * Undocumented
  */
 export function afterActiveInstanceBlur(): void {
-  // log.group("afterActiveInstanceBlur");
-  // log.groupEnd();
+  log.info("λ afterActiveInstanceBlur");
+  log.info("\n");
 }
 
 /**
  * Undocumented
  */
 export function getInstanceFromScope(scopeInstance: any): null | Instance {
-  // log.group("getInstanceFromScope");
-  // log.groupEnd();
+  log.info("λ getInstanceFromScope");
+  log.debug("\tscopeInstance:", scopeInstance);
+  log.info("\n");
 
   return null;
 }
@@ -681,6 +687,8 @@ export function getInstanceFromScope(scopeInstance: any): null | Instance {
  * Undocumented
  */
 export function prepareScopeUpdate(scopeInstance: any, instance: any): void {
-  // log.group("prepareScopeUpdate");
-  // log.groupEnd();
+  log.info("λ prepareScopeUpdate");
+  log.debug("\tscopeInstance:", scopeInstance);
+  log.debug("\tinstance:", instance);
+  log.info("\n");
 }

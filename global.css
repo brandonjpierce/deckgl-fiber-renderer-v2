@@ -66,3 +66,12 @@ h6 {
 #__next {
   isolation: isolate;
 }
+
+html,
+body {
+  height: 100vh;
+}
+
+.maplibregl-map {
+  height: 100%;
+}

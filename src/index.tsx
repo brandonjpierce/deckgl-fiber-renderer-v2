@@ -1,4 +1,4 @@
-import { useRef, memo } from "react";
+import { useRef, memo, useEffect } from "react";
 import { useIsomorphicLayoutEffect } from "./hooks";
 import { createRoot } from "./renderer";
 import type { CanvasElement, ReconcilerRoot, DeckGLProps } from "./types";
@@ -12,7 +12,7 @@ function DeckglComponent(props: DeckGLProps) {
   const root = useRef<ReconcilerRoot>(null!);
 
   useIsomorphicLayoutEffect(() => {
-    if (canvas.current && !root.current) {
+    if (!root.current) {
       root.current = createRoot(canvas.current);
       root.current.configure({
         ...etc,
@@ -25,7 +25,7 @@ function DeckglComponent(props: DeckGLProps) {
     root.current?.render(children);
   });
 
-  useIsomorphicLayoutEffect(() => {
+  useEffect(() => {
     return () => {
       if (root.current) {
         // FIXME: fires twice in StrictMode
@@ -34,8 +34,14 @@ function DeckglComponent(props: DeckGLProps) {
     };
   }, []);
 
+  // NOTE: interleaved prop is a hint that we are utilizing an external renderer such as Mapbox/Maplibre
+  // so we want to avoid rendering another container / canvas element
+  if (props.interleaved) {
+    return null;
+  }
+
   return (
-    <div ref={wrapper}>
+    <div ref={wrapper} id="deckgl-fiber-wrapper">
       <canvas ref={canvas} id="deckgl-fiber-canvas" />
     </div>
   );

@@ -1,6 +1,7 @@
 import { ConcurrentRoot } from "react-reconciler/constants";
 import { useStore as storeInstance } from "./store";
 import { Deck } from "@deck.gl/core";
+import { MapboxOverlay } from "@deck.gl/mapbox";
 import reactReconciler from "react-reconciler";
 import * as config from "./config";
 import type { CanvasElement, ReconcilerRoot, HostContext } from "./types";
@@ -47,12 +48,23 @@ export function createRoot<TCanvas extends CanvasElement>(
   }
 
   return {
-    configure(props) {
+    configure({ onConfigure, ...props }) {
       const state = store.getState();
 
-      const deckgl = new Deck(props);
+      // NOTE: interleaved prop is a hint that we are utilizing an external renderer such as Mapbox/Maplibre
+      const deckgl = props.interleaved
+        ? new MapboxOverlay(props)
+        : new Deck(props);
 
       state.setDeckgl(deckgl);
+
+      if (onConfigure) {
+        onConfigure({
+          // TODO: is passing props here useful given you should have access to them already?
+          props,
+          deckgl,
+        });
+      }
     },
     render(children) {
       renderer.updateContainer(children, container, null, noop);

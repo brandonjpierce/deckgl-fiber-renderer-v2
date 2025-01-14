@@ -1,41 +1,15 @@
+import { BitmapLayer } from "@deck.gl/layers";
+import { randomPoint } from "@turf/random";
 import { StrictMode, useEffect, useRef, useState, memo } from "react";
 import { createRoot } from "react-dom/client";
-import { randomPoint } from "@turf/random";
+import { Map as MapLibre } from "maplibre-gl";
 import { Deckgl } from "./src/index";
-// import "./src/jsx";
-import "./global.css";
 
-import { BitmapLayer } from "@deck.gl/layers";
+import "./global.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 deck.log.enable();
 deck.log.level = 0;
-
-const URLS = [
-  "https://a.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png",
-  "https://b.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png",
-  "https://c.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png",
-  "https://d.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png",
-];
-
-export function Basemap() {
-  return (
-    <tileLayer
-      id="basemap"
-      data={URLS}
-      renderSubLayers={(props) => {
-        const {
-          bbox: { west, south, east, north },
-        } = props.tile;
-
-        return new BitmapLayer(props, {
-          data: null,
-          image: props.tile.data,
-          bounds: [west, south, east, north],
-        });
-      }}
-    />
-  );
-}
 
 function Test({ children, id }) {
   return (
@@ -122,7 +96,7 @@ const Layers = memo(() => {
   return (
     <>
       <mapView id="main">
-        <Basemap />
+        {/* <Basemap /> */}
         <scatterplotLayer
           id="outer"
           data={generateData()}
@@ -158,13 +132,29 @@ function getTooltip({ object }) {
 
 function App() {
   return (
-    <Deckgl
-      getTooltip={getTooltip}
-      initialViewState={INITIAL_VIEW_STATE}
-      controller
-    >
-      <Layers />
-    </Deckgl>
+    <>
+      <Deckgl
+        getTooltip={getTooltip}
+        initialViewState={INITIAL_VIEW_STATE}
+        controller
+        interleaved
+        onConfigure={({ deckgl }) => {
+          // NOTE: we can technically instantiate this outside of React as well
+          const map = new MapLibre({
+            container: "root",
+            style:
+              "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+            center: [INITIAL_VIEW_STATE.longitude, INITIAL_VIEW_STATE.latitude],
+            zoom: INITIAL_VIEW_STATE.zoom,
+          });
+
+          map.addControl(deckgl);
+          // map.setProjection({ type: "globe" });
+        }}
+      >
+        <Layers />
+      </Deckgl>
+    </>
   );
 }
 
